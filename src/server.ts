@@ -8,6 +8,8 @@ import morganMiddleware from "./config/morganMiddleware";
 // import bodyParser from "body-parser";
 import indexRouter from "./routes/index";
 import passport from "passport";
+import compression from "compression";
+import helmet from "helmet";
 
 // import Logger from "./lib/logger";
 import { User, UserDocument } from "./models/user";
@@ -39,6 +41,8 @@ passport.deserializeUser((id, done) => {
 app.set("views", path.join(__dirname, "../src/views"));
 app.set("view engine", "pug");
 
+app.use(compression());
+app.use(helmet());
 app.use(express.static(path.join(__dirname, "../src/public")));
 app.use(cookieParser());
 app.use(morganMiddleware);
