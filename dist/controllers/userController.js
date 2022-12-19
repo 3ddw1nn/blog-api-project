@@ -26,42 +26,58 @@ const user_logout_get = (req, res, next) => {
     });
 };
 exports.user_logout_get = user_logout_get;
-const user_login_post = (req, res, next) => {
-    passport_1.default.authenticate("local", { session: false }, (err, user) => {
-        if (err || !user) {
-            return res.status(400).json({
-                message: "Something is not right",
-                user: user,
-            });
-        }
-        req.login(user, { session: false }, (err) => {
-            if (err) {
-                return next(err);
+exports.user_login_post = [
+    (0, express_validator_1.body)("username", "Username must not be empty.")
+        .trim()
+        .isLength({ min: 1 })
+        .escape(),
+    (0, express_validator_1.body)("password", "Password must not be empty.")
+        .trim()
+        .isLength({ min: 1 })
+        .escape(),
+    (req, res, next) => {
+        const errors = (0, express_validator_1.validationResult)(req);
+        passport_1.default.authenticate("local", (err, user) => {
+            if (err || !user) {
+                if (!errors.isEmpty()) {
+                    res.render("log-in-form", {
+                        title: "Log In",
+                        user: req.user,
+                        errors: errors.array(),
+                    });
+                }
             }
-            const payload = { user };
-            const token = jsonwebtoken_1.default.sign(payload, `${process.env.JWT_SECRET}`);
-            post_1.Post.find()
-                .populate("user")
-                .exec((err, posts) => {
+            req.login(user, (err) => {
                 if (err) {
                     return next(err);
                 }
-                //Successful, so render
-                res.render("index", {
-                    title: "Welcome to Send Moods",
-                    user: req.user,
-                    posts,
-                    token,
+                const payload = { user };
+                const token = jsonwebtoken_1.default.sign(payload, `${process.env.JWT_SECRET}`, {
+                    expiresIn: "2s",
+                });
+                post_1.Post.find()
+                    .populate("user")
+                    .exec((err, posts) => {
+                    if (err) {
+                        return next(err);
+                    }
+                    //Successful, so render
+                    res.render("index", {
+                        title: "Welcome to Send Moods",
+                        user: req.user,
+                        posts,
+                        token,
+                    });
                 });
             });
-        });
-        return;
-    })(req, res);
-};
-exports.user_login_post = user_login_post;
+            return;
+        })(req, res);
+    },
+];
 const user_signup_get = (req, res) => {
     res.render("sign-up-form", {
         title: "Sign Up",
+        user: req.user,
     });
 };
 exports.user_signup_get = user_signup_get;
@@ -107,6 +123,7 @@ exports.user_admin_post = [
 const forgot_password_get = (req, res) => {
     res.render("forgot-password-form", {
         title: "Forgot Your Password?",
+        user: req.user,
     });
 };
 exports.forgot_password_get = forgot_password_get;
@@ -133,6 +150,7 @@ exports.forgot_password_post = [
 const forgot_password_submit_get = (req, res) => {
     res.render("forgot-password-submission", {
         title: "Email Sent",
+        user: req.user,
     });
 };
 exports.forgot_password_submit_get = forgot_password_submit_get;
@@ -175,6 +193,7 @@ exports.user_signup_post = [
                 res.render("sign-up-form", {
                     title: "Sign Up",
                     errors: errors.array(),
+                    user: req.user,
                 });
                 return;
             }

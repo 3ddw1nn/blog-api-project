@@ -13,6 +13,8 @@ const morganMiddleware_1 = __importDefault(require("./config/morganMiddleware"))
 // import bodyParser from "body-parser";
 const index_1 = __importDefault(require("./routes/index"));
 const passport_1 = __importDefault(require("passport"));
+const compression_1 = __importDefault(require("compression"));
+const helmet_1 = __importDefault(require("helmet"));
 // import Logger from "./lib/logger";
 const user_1 = require("./models/user");
 require("./controllers/passportController");
@@ -35,6 +37,8 @@ passport_1.default.deserializeUser((id, done) => {
 //View Engine setup
 app.set("views", path_1.default.join(__dirname, "../src/views"));
 app.set("view engine", "pug");
+app.use((0, compression_1.default)());
+app.use((0, helmet_1.default)());
 app.use(express_1.default.static(path_1.default.join(__dirname, "../src/public")));
 app.use((0, cookie_parser_1.default)());
 app.use(morganMiddleware_1.default);
