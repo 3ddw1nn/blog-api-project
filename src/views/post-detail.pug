@@ -1,0 +1,59 @@
+extends layout
+
+block content
+
+    main(class="pt-8 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900")
+    div(class="flex justify-between px-4 mx-auto max-w-screen-xl")
+        article(class="mx-auto w-full max-w-2xl format format-sm sm:format-base lg:format-lg format-blue dark:format-invert")
+            header(class="mb-4 lg:mb-6 not-format")
+                address(class="flex items-center mb-6 not-italic")
+                    div(class="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white")
+                        -var profileImage= post.user.image
+                        img(class="mr-4 w-16 h-16 rounded-full" src=profileImage alt="User Profile Pic")
+                        div
+                            a(href="#" rel="author" class="text-xl font-bold text-gray-900 dark:text-white") #{post.user.username}
+                            p(class="text-base font-light text-gray-500 dark:text-gray-400") #{post.user.job_title}
+                h1(class="mb-2 text-3xl font-extrabold leading-tight text-gray-900 lg:mb-2 lg:text-4xl dark:text-white") #{post.post_title}
+                p(class="text-base font-light text-gray-500 dark:text-gray-400") Published: #{post.date_formatted}
+            p(class="text-white") #{post.text}
+                section(class="not-format mt-10")
+                    div(class="flex justify-between items-center mb-6")
+                        h2(class="text-lg lg:text-2xl font-bold text-gray-900 dark:text-white") Discussion #{"("} #{comments.length} #{")"}
+                if user        
+                    form(class="mb-6" action="" method="POST")
+                        div(class=" mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700")
+                            label(for="comment_text" class="sr-only") Your comment
+                            textarea(id="comment_text" name="comment_text" rows="6" class="py-2 px-2 w-full text-sm text-gray-900 border-0 focus:ring-0 dark:text-white dark:placeholder-gray-400 dark:bg-gray-800"
+                                placeholder="Write a comment..." required)
+                        button(type="submit" class="bg-indigo-600 px-4 py-1 rounded-md text-white hover:bg-indigo-500 text-sm") Post comment
+                    if comments
+                        ul(class="mt-8 flex flex-wrap justify-center")
+                            each comment in comments
+                                div(class=" bg-gray-800 h-fit w-full p-7 mb-6 rounded-2xl")
+                                    div(class="flex flex-row items-center justify-center")
+                                        -var test= comment.user.image
+                                        img( alt="profile" src= test class = "ml-2 mx-auto object-cover rounded-full h-20 w-20")
+                                        div(class="w-3/4")
+                                            p(class="mb-1 text-slate-500 w-full md:w-2/3 ml-1 text-sm") #{comment.date_formatted}
+                                            p(class="m-4 text-white w-full md:w-2/3 ml-1 text-m") #{comment.comment_text}
+                                            div(class="flex justify-center w-2/3 mt-8")
+                                                span(class="mr-2 text-sm font-semibold text-indigo-600") #{comment.user.username}
+                                                span(class="text-sm mr-2 font-semibold text-slate-500") / 
+                                                span(class="text-sm font-semibold text-slate-500") #{comment.user.job_title}
+                else
+                    if comments
+                        ul(class="mt-8 flex flex-wrap justify-center")
+                            each comment in comments
+                                div(class=" bg-gray-800 h-fit w-full p-7 mb-6 rounded-2xl")
+                                    div(class="flex flex-row items-center justify-center")
+                                        -var test= comment.user.image
+                                        img( alt="profile" src= test class = "ml-2 mx-auto object-cover rounded-full h-20 w-20")
+                                        div(class="w-3/4")
+                                            p(class="mb-1 text-slate-500 w-full md:w-2/3 ml-1 text-sm") #{comment.date_formatted}
+                                            p(class="m-4 text-white w-full md:w-2/3 ml-1 text-m") #{comment.comment_text}
+                                            div(class="flex justify-center w-2/3 mt-8")
+                                                span(class="mr-2 text-sm font-semibold text-indigo-600") #{comment.user.username}
+                                                span(class="text-sm mr-2 font-semibold text-slate-500") / 
+                                                span(class="text-sm font-semibold text-slate-500") #{comment.user.job_title}
+
+

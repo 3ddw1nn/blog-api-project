@@ -1,0 +1,38 @@
+extends layout
+
+block content
+  div(class="mt-10 flex justify-center")
+    h1(class="text-white") #{title}
+  if user 
+    if user.admin_status==false
+      if posts
+        ul(class="flex flex-wrap justify-center")
+          each post in posts
+            div(class="flex flex-wrap w-1/4") 
+                a(href=post.url class="m-6 text-white w-72 h-78 hover:text-white  rounded-lg box-border p-5 cursor-pointer transition-transform transition-duration hover:-translate-y-3 border-2 border-indigo-500 hover:border-white hover:transition-duration-1000")
+                  h5(class="text-2xl") #{post.post_title}
+                  div(class="mt-4 max-h-44 overflow-hidden -o-ellipsis-lastline text-sm") #{post.text}
+                  div(class="mt-4 hover:text-white  text-indigo-500 text-right") Read more...
+                  div(class="mt-4") #{post.date_formatted}
+    else
+      div(class="flex justify-center m-6")
+        a(href="/create-post" class="bg-indigo-600 px-4 py-2 rounded text-white hover:bg-indigo-500 text-sm") Create a Post
+      if (posts)
+        ul(class="flex flex-wrap justify-center")
+          each post in posts
+            div(class="flex flex-wrap w-1/4") 
+                a(href=post.url class="m-6 text-white w-72 h-78 hover:text-white  rounded-lg box-border p-5 cursor-pointer transition-transform transition-duration hover:-translate-y-3 border-2 border-indigo-500 hover:border-white hover:transition-duration-1000")
+                  h5(class="text-2xl") #{post.post_title}
+                  div(class="mt-4 max-h-44 overflow-hidden -o-ellipsis-lastline text-sm") #{post.text}
+                  div(class="mt-4 hover:text-white  text-indigo-500 text-right") Read more...
+                  div(class="mt-4") #{post.date_formatted}
+  else 
+    if (posts)
+      ul(class="flex flex-wrap justify-center")
+        each post in posts
+          div(class="flex flex-wrap w-1/4") 
+              a(href=post.url class="m-6 text-white w-72 h-78 hover:text-white  rounded-lg box-border p-5 cursor-pointer transition-transform transition-duration hover:-translate-y-3 border-2 border-indigo-500 hover:border-white hover:transition-duration-1000")
+                h5(class="text-2xl") #{post.post_title}
+                div(class="mt-4 max-h-44 overflow-hidden -o-ellipsis-lastline text-sm") #{post.text}
+                div(class="mt-4 hover:text-white  text-indigo-500 text-right") Read more...
+                div(class="mt-4") #{post.date_formatted}
