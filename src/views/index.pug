@@ -16,7 +16,7 @@ block content
                   div(class="mt-4") #{post.date_formatted}
     else
       div(class="flex justify-center m-6")
-        a(href="/create-post" class="bg-indigo-600 px-4 py-2 rounded text-white hover:bg-indigo-500 text-sm") Create a Post
+        a(href="/user/create-post" class="bg-indigo-600 px-4 py-2 rounded text-white hover:bg-indigo-500 text-sm") Create a Post
       if (posts)
         ul(class="flex flex-wrap justify-center")
           each post in posts

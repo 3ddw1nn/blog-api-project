@@ -1,6 +1,5 @@
 // import { UserDocument } from "../models/user";
 import { Request } from "express";
-import { PostDocument } from "../models/post";
 
 // interface IUserRequest extends Request {
 //   user: UserDocument;
@@ -16,11 +15,25 @@ declare global {
       job_title: string;
       email: string;
       username: string;
-      password: string;
+      roles: string[];
       admin_status: boolean;
     }
   }
 }
+
+// declare global {
+//   namespace Express {
+//     interface Role {
+//       first_name: string;
+//       last_name: string;
+//       job_title: string;
+//       email: string;
+//       username: string;
+//       roles: object;
+//       admin_status: boolean;
+//     }
+//   }
+// }
 
 declare global {
   namespace Express {

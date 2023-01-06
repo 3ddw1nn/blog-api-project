@@ -1,61 +1,53 @@
 import passport from "passport";
-import passportLocal from "passport-local";
 import bcrypt from "bcrypt";
 import { User, UserDocument } from "../models/user";
-import passportJWT from "passport-jwt";
+import { Request } from "express";
+import { Strategy as LocalStrategy } from "passport-local";
+import {
+  Strategy as JWTStrategy,
+  ExtractJwt as ExtractJWT,
+} from "passport-jwt";
 
-const JWTStrategy = passportJWT.Strategy;
-const ExtractJWT = passportJWT.ExtractJwt;
-
-// import jwt from "jsonwebtoken";
-
-// const SECRETS = {
-//   jwt: process.env.JWT_SECRET || "secret",
-//   jwtExp: "6h",
-// };
-
-const LocalStrategy = passportLocal.Strategy;
-
-// export const newToken = (user: UserDocument) => {
-//   return jwt.sign({ username: user.username }, SECRETS.jwt, {
-//     expiresIn: SECRETS.jwtExp,
-//   });
-// };
-
-// export const verifyToken = (token: string) =>
-//   new Promise((resolve, reject) => {
-//     jwt.verify(token, SECRETS.jwt, (err, payload) => {
-//       if (err) return reject(err);
-//       resolve(payload);
-//     });
-//   });
-
+// import Logger from "../lib/logger";
 passport.use(
-  new LocalStrategy((username: string, password: string, done) => {
-    User.findOne({ username: username }, (err: Error, user: UserDocument) => {
-      if (err) return done(err);
+  new LocalStrategy(
+    { passReqToCallback: true },
+    (req: Request, username: string, password: string, done) => {
+      User.findOne(
+        { username: username },
+        (err: Error | undefined, user: UserDocument) => {
+          if (err) return done(err);
 
-      if (!user) {
-        return done(null, false, { message: "Incorrect username" });
-      }
-      bcrypt.compare(
-        password,
-        user.password,
-        (err: Error | undefined, res: boolean) => {
-          if (err) {
-            return done(err);
+          if (!user) {
+            return done(null, false, { message: "User not found in Mongo" });
           }
-          if (res) {
-            //passwords match
-            return done(null, user);
-          } else {
-            //passwords do not match
-            return done(null, false, { message: "Incorrect password" });
-          }
+          console.log(password);
+          console.log(user.password);
+          bcrypt.compare(
+            password,
+            user.password,
+            (err: Error | undefined, match: boolean) => {
+              if (err) {
+                console.log("this is passport err path");
+                return done(err);
+              }
+
+              if (match) {
+                //passwords match
+                console.log("bcrypt response was truthy");
+                console.log(user);
+                return done(null, user);
+              } else {
+                //passwords do not match
+                console.log("this is passwords do not match path");
+                return done(null, false, { message: "Incorrect password" });
+              }
+            }
+          );
         }
       );
-    });
-  })
+    }
+  )
 );
 
 passport.use(
@@ -64,11 +56,13 @@ passport.use(
       jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
       secretOrKey: `${process.env.JWT_SECRET}`,
     },
-    function (jwtPayload, cb) {
+    async function (jwtPayload, cb) {
       //find the user in db if needed. This functionality may be omitted if you store everything you'll need in JWT payload.
-      return User.findById(jwtPayload.id)
+      return await User.findById(jwtPayload.sub)
         .then((user) => {
-          return cb(null, user!);
+          if (user) {
+            return cb(null, user);
+          }
         })
         .catch((err) => {
           return cb(err);

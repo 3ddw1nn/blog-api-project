@@ -1,8 +1,6 @@
-// import express from "express";
 import { NextFunction, Request, Response } from "express";
-// import { CallbackError } from "mongoose";
-// import Logger from "../lib/logger";
 import { Post } from "../models/post";
+import { User, UserDocument } from "../models/user";
 import { body, validationResult } from "express-validator";
 
 export const index = (req: Request, res: Response, next: NextFunction) => {
@@ -12,18 +10,21 @@ export const index = (req: Request, res: Response, next: NextFunction) => {
       if (err) {
         return next(err);
       }
-      //Successful, so render
-      res.render("index", {
-        title: "Welcome to Send Moods",
-        user: req.user,
-        posts,
+      User.find().exec((err, users) => {
+        if (err) {
+          return next(err);
+        }
+        res.json({
+          user: req.user,
+          posts,
+          users,
+        });
       });
     });
 };
 
 export const create_post_get = (req: Request, res: Response) => {
-  res.render("create-post-form", {
-    title: "Create a Post",
+  res.json({
     user: req.user,
     // posts,
   });
@@ -43,23 +44,32 @@ export const create_post_post = [
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
-      res.render("create-post-form", {
-        title: "Create a Post",
+      return res.json({
         user: req.user,
         errors: errors.array(),
       });
     }
 
-    const post = new Post({
-      user: req.user,
-      post_title: req.body.post_title,
-      text: req.body.text,
-      timestamp: Date.now(),
-    });
+    User.findOne(
+      { username: req.user?.username },
+      (err: Error, foundUser: UserDocument) => {
+        if (err) {
+          return next(err);
+        }
 
-    post.save((err) => {
-      if (err) return next(err);
-      res.redirect("/");
-    });
+        const post = new Post({
+          user: foundUser,
+          post_title: req.body.post_title,
+          text: req.body.text,
+          timestamp: Date.now(),
+        });
+
+        post.save((err) => {
+          if (err) return next(err);
+          return res.sendStatus(200);
+        });
+      }
+    );
+    return;
   },
 ];

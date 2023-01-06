@@ -4,8 +4,10 @@ import * as user_controller from "../controllers/userController";
 import * as post_controller from "../controllers/postController";
 import * as comment_controller from "../controllers/commentController";
 
-import multer from "multer";
+// import ROLES_LIST from "../config/roles_list";
+// import verifyRoles from "../middleware/verifyRoles";
 
+import multer from "multer";
 type DestinationCallback = (error: Error | null, destination: string) => void;
 type FileNameCallback = (error: Error | null, filename: string) => void;
 
@@ -37,12 +39,16 @@ const upload = multer({
   storage: fileStorage,
 });
 
+// const upload = multer({
+//   dest: "../public/images",
+// });
+
 router.get("/", post_controller.index);
 
 router.get("/log-in", user_controller.user_login_get);
 router.post("/log-in", user_controller.user_login_post);
 
-router.get("/log-out", user_controller.user_logout_get);
+// router.get("/log-out", user_controller.user_logout_get);
 
 router.get("/sign-up", user_controller.user_signup_get);
 router.post(
@@ -51,14 +57,8 @@ router.post(
   user_controller.user_signup_post
 );
 
-router.get("/join-admin", user_controller.user_admin_get);
-router.post("/join-admin", user_controller.user_admin_post);
-
-router.get("/create-post", post_controller.create_post_get);
-router.post("/create-post", post_controller.create_post_post);
-
-router.get("/forgot-password", user_controller.forgot_password_get);
-router.post("/forgot-password", user_controller.forgot_password_post);
+// router.get("/join-admin", user_controller.user_admin_get);
+// router.post("/join-admin", user_controller.user_admin_post);
 
 router.get(
   "/forgot-password-submission",

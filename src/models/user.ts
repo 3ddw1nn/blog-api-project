@@ -7,7 +7,9 @@ export type UserDocument = {
   email: string;
   username: string;
   password: string;
-  admin_status: boolean;
+  roles: string[];
+  image: string;
+  refreshToken: string;
 };
 
 //Schema
@@ -18,8 +20,12 @@ const UserSchema = new Schema({
   email: { type: String, required: true },
   username: { type: String, required: true },
   password: { type: String, required: true },
-  admin_status: { type: Boolean, default: false },
+  roles: {
+    type: [String],
+    default: ["2001"],
+  },
   image: { type: String, required: false },
+  refreshToken: { type: String },
 });
 
 export const User = model<UserDocument>("User", UserSchema);
